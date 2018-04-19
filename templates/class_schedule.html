@@ -12,13 +12,20 @@
                 <tr>
                     <th>Period</th>
                     <th>Subject</th>
+                    <th>Teacher</th>
                     <th>Web Resource</th>
                 </tr>
+
+
+                {% for course in courses %}
                 <tr>
-                    <td>1</td>
-                    <td>Intro to CS</td>
-                    <td><a href = "http://snap.berkeley.edu">Snap!</a></td>
+                    <td>{{ course.period }}</td>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.teacher_name }}</td>
+                    <td><a href="{{ course.resource_url }}">{{ course.resource_name }}</a></td>
                 </tr>
+                {% endfor %}
+
             </table>
         </div>
     </body>
