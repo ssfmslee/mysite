@@ -7,9 +7,14 @@ import constants
 
 app = Flask(__name__)
 
-@app.route('/')
+'''@app.route('/')
 def hello_world():
     return 'Hello from Miss Lee!'
+    '''
+
+@app.route('/')
+def homepage():
+    return render_template('index.html')
 
 @app.route('/about_me')
 def about_me():
