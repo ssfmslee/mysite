@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Top Ten Songs{% endblock %}
+
+{% block content %}
+<h2>My Top Ten Songs</h2>
+            <table class ="table table-bordered table-striped">
+                <tr>
+                    <th>Song Title</th>
+                    <th>Artist Name</th>
+                    <th>Url</th>
+                </tr>
+
+                {% for song in songs %}
+                <tr>
+                    <td>{{ song.title }}</td>
+                    <td>{{ song.artist_name }}</td>
+                    <td><a href="{{ song.youtube_url }}">{{ song.youtube_url }}</a></td>
+                </tr>
+                {% endfor %}
+
+            </table>
+
+{% endblock %}
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/V8vym4gtcEM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>

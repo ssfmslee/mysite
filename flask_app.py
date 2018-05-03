@@ -3,9 +3,13 @@
 
 from flask import Flask
 from flask import render_template
+from flask_sqlalchemy import SQLAlchemy
 import constants
 
 app = Flask(__name__)
+
+app.config.from_object('config.BaseConfig')
+db = SQLAlchemy(app)
 
 '''@app.route('/')
 def hello_world():
@@ -28,3 +32,8 @@ def class_schedule():
 @app.route('/register')
 def register():
     return render_template('register.html')
+
+
+@app.route('/top_ten_songs')
+def top_ten_songs():
+    return render_template('top_ten_songs.html', songs=constants.TOP_TEN_SONGS)

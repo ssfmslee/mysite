@@ -1,4 +1,5 @@
 import course
+import song
 
 COURSES = [
     course.Course(period=1,
@@ -31,4 +32,15 @@ COURSES = [
                   teacher_name='Ms. Lee',
                   resource_name='Pearson Realize',
                   resource_url='https://www.pearsonrealize.com'),
+]
+
+# Song class has title, artist_name, and youtube_url
+
+TOP_TEN_SONGS = [
+    song.Song(title="Into the Deep",
+                artist_name="Citipointe Live",
+                youtube_url="https://www.youtube.com/watch?v=V8vym4gtcEM"),
+    song.Song(title=None,
+                artist_name=None,
+                youtube_url=None)
 ]
