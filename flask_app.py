@@ -19,6 +19,12 @@ class Course(db.Model):
     resource_name = db.Column(db.String(80))
     resource_url = db.Column(db.String(300))
 
+class Song(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    artist_name = db.Column(db.String(80))
+    youtube_url = db.Column(db.String(300))
+
 @app.route('/')
 def homepage():
     return render_template('index.html')
@@ -29,8 +35,9 @@ def about_me():
 
 @app.route('/class_schedule')
 def class_schedule():
+    courses = Course.query.all()
     return render_template('class_schedule.html',
-                           courses=constants.COURSES)
+                           courses=courses)
 
 @app.route('/register')
 def register():

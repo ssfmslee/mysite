@@ -1,6 +1,7 @@
 import course
 import song
 
+'''
 COURSES = [
     course.Course(period=1,
                   name='Intro to Computer Science',
@@ -33,7 +34,7 @@ COURSES = [
                   resource_name='Pearson Realize',
                   resource_url='https://www.pearsonrealize.com'),
 ]
-
+'''
 # Song class has title, artist_name, and youtube_url
 
 TOP_TEN_SONGS = [
