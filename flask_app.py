@@ -46,7 +46,8 @@ def register():
 
 @app.route('/top_ten_songs')
 def top_ten_songs():
-    return render_template('top_ten_songs.html', songs=constants.TOP_TEN_SONGS)
+    songs = Song.query.all()
+    return render_template('top_ten_songs.html', songs=songs)
 
 if __name__ == '__main__':
   db.create_all()
@@ -58,4 +59,9 @@ if __name__ == '__main__':
 '''@app.route('/')
 def hello_world():
     return 'Hello from Miss Lee!'
+
+# This route uses the constants.py to grab top ten songs.
+@app.route('/top_ten_songs')
+def top_ten_songs():
+    return render_template('top_ten_songs.html', songs=constants.TOP_TEN_SONGS)
     '''
