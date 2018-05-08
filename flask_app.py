@@ -4,7 +4,7 @@
 from flask import Flask
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
-import constants
+#import constants
 
 app = Flask(__name__)
 
