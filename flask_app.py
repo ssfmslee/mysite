@@ -10,6 +10,11 @@ from flask_nav.elements import Navbar, Subgroup, View
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Email, Length
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
+from flask import redirect
+from flask import url_for
+from wtforms.validators import ValidationError
 #import constants
 
 app = Flask(__name__)
@@ -42,6 +47,23 @@ class RegistrationForm(FlaskForm):
         'Password', validators=[InputRequired(), Length(min=8, max=80)])
     submit = SubmitField('Register')
 
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Please choose a different username.')
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15))
+    email = db.Column(db.String(80))
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 @app.route('/')
 def homepage():
     return render_template('index.html')
@@ -60,10 +82,13 @@ def class_schedule():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        return (
-            form.username.data + ', ' +
-            form.email.data + ', ' +
-            form.password.data)
+        new_user = User(
+            username=form.username.data,
+            email=form.email.data)
+        new_user.set_password(form.password.data)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('homepage'))
     return render_template('register.html', form=form)
 
 '''
