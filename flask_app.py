@@ -16,12 +16,15 @@ from flask import redirect
 from flask import url_for
 from wtforms.validators import ValidationError
 from flask import flash
+from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
+from datetime import datetime
 #import constants
 
 app = Flask(__name__)
 
 app.config.from_object('config.BaseConfig')
 db = SQLAlchemy(app)
+login = LoginManager(app)
 
 Bootstrap(app)
 
@@ -58,7 +61,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired()])
     submit = SubmitField('Sign in')
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15))
     email = db.Column(db.String(80))
@@ -69,6 +72,16 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(280))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+@login.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=int(user_id)).first()
 
 @app.route('/')
 def homepage():
@@ -94,6 +107,7 @@ def register():
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
+        login_user(new_user)
         return redirect(url_for('homepage'))
     return render_template('register.html', form=form)
 
@@ -113,6 +127,7 @@ nav = Nav(app)
 def create_navbar():
     home_view = View('Home', 'homepage')
     login_view = View('Login', 'login')
+    logout_view = View('Logout', 'logout')
     register_view = View('Register', 'register')
     about_me_view = View('About Me', 'about_me')
     class_schedule_view = View('Class Schedule', 'class_schedule')
@@ -121,18 +136,29 @@ def create_navbar():
                              about_me_view,
                              class_schedule_view,
                              top_ten_songs_view)
-    return Navbar("Miss Lee's Site", home_view, misc_subgroup, login_view, register_view)
+    if current_user.is_authenticated:
+        return Navbar("Miss Lee's Site", home_view, misc_subgroup, logout_view)
+    else:
+        return Navbar("Miss Lee's Site", home_view, misc_subgroup, login_view, register_view)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if not user or not user.check_password(form.password.data):
             flash('Username or password is incorrect.', 'danger')
             return render_template('login.html', form=form)
-        return 'Welcome ' + user.username + '!'
+        login_user(user)
+        return redirect(url_for('homepage'))
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('homepage'))
 
 if __name__ == '__main__':
   db.create_all()
